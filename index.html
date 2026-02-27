@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Night Talk 200</title>
+<style>
+body{
+    margin:0;
+    background:#000;
+    color:#fff;
+    font-family:-apple-system,BlinkMacSystemFont;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    height:100vh;
+}
+h1{
+    font-size:30px;
+    letter-spacing:3px;
+    margin-bottom:25px;
+}
+canvas{
+    transition:transform 4.5s cubic-bezier(.15,.85,.25,1);
+}
+button{
+    margin-top:40px;
+    padding:18px 60px;
+    font-size:20px;
+    border:1px solid #fff;
+    background:#000;
+    color:#fff;
+    cursor:pointer;
+}
+button:hover{
+    background:#fff;
+    color:#000;
+}
+#result{
+    margin-top:40px;
+    max-width:85%;
+    text-align:center;
+    font-size:24px;
+    line-height:1.6;
+}
+.pointer{
+    position:absolute;
+    top:-22px;
+    width:0;
+    height:0;
+    border-left:14px solid transparent;
+    border-right:14px solid transparent;
+    border-bottom:22px solid #fff;
+}
+.wrap{
+    position:relative;
+}
+</style>
+</head>
+<body>
+
+<h1>NIGHT TALK 200</h1>
+
+<div class="wrap">
+<div class="pointer"></div>
+<canvas id="wheel" width="380" height="380"></canvas>
+</div>
+
+<button onclick="spin()">SPIN</button>
+
+<div id="result"></div>
+
+<script>
+const data = {
+
+"脑洞幻想":[
+"如果我们一起隐居你选哪里？",
+"如果突然暴富第一件事？",
+"如果创业开什么？",
+"如果能瞬移去哪？",
+"如果世界暂停一天？",
+"如果穿越年代？",
+"如果拥有超能力？",
+"如果重读大学？",
+"如果拍电影？",
+"如果开民宿？",
+"如果去火星？",
+"如果交换身体一天？",
+"如果只能带三样东西旅行？",
+"如果突然失业会怎样？",
+"如果变成公众人物？",
+"如果环游世界一年？",
+"如果住在森林？",
+"如果拥有私人岛屿？",
+"如果开咖啡馆？",
+"如果写一本书？",
+"如果消失一周？",
+"如果时间倒流一年？",
+"如果一起录播客？",
+"如果开情侣频道？",
+"如果重新认识一次？"
+],
+
+"感情升温":[
+"第一次觉得我特别？",
+"我做什么最打动你？",
+"我最大优点？",
+"最喜欢我哪点？",
+"最想一起完成什么？",
+"我们像什么组合？",
+"和我最安心瞬间？",
+"我最让你骄傲的点？",
+"最想被我理解什么？",
+"最想听我说什么？",
+"最喜欢我哪种拥抱？",
+"我哪种表情最可爱？",
+"最想和我去哪里？",
+"最难忘的一个瞬间？",
+"你最依赖我什么？",
+"我哪点改变了你？",
+"什么时候最想抱我？",
+"你觉得我们缘分如何？",
+"我们最甜的细节？",
+"你觉得我温柔吗？",
+"你最怕失去我什么？",
+"你最喜欢我笑的样子？",
+"你最想我们一起老去吗？",
+"什么时候最爱我？",
+"你觉得我们会走多远？"
+],
+
+"深夜走心":[
+"最害怕什么？",
+"最想被理解什么？",
+"最孤独时刻？",
+"理想的一天？",
+"最难熬阶段？",
+"最骄傲的成长？",
+"最脆弱瞬间？",
+"幸福定义？",
+"压力最大来源？",
+"最想改变什么？",
+"最想保护什么？",
+"最真实的一面？",
+"你会为爱牺牲吗？",
+"最需要安全感时？",
+"最难忘夜晚？",
+"最想对未来说什么？",
+"最怕变成谁？",
+"最害怕失控？",
+"最深的遗憾？",
+"你会原谅自己吗？",
+"最想重新体验什么？",
+"最想逃离什么？",
+"最感谢谁？",
+"你相信命运吗？",
+"你相信永远吗？"
+],
+
+"好玩互动":[
+"用3词形容我",
+"我像什么动物？",
+"我像什么天气？",
+"我像什么城市？",
+"我像什么饮料？",
+"我们像哪种电影？",
+"谁更幼稚？",
+"谁更黏人？",
+"我最擅长什么？",
+"我最怕什么？",
+"给我起外号？",
+"选钱还是时间？",
+"选自由还是安全？",
+"选抱抱还是亲亲？",
+"我们谁更理性？",
+"谁更爱撒娇？",
+"谁更冲动？",
+"谁更浪漫？",
+"谁更爱吃醋？",
+"谁更爱熬夜？",
+"谁更会哄人？",
+"谁更有仪式感？",
+"谁更爱旅行？",
+"谁更爱计划？",
+"谁更懒？"
+],
+
+"生活日常":[
+"理想周末？",
+"最喜欢放松方式？",
+"最想学什么？",
+"最想养成什么习惯？",
+"最爱食物前三？",
+"最想旅行国家？",
+"适合早睡还是夜猫？",
+"理想家风格？",
+"最讨厌家务？",
+"愿意为我学什么？",
+"最想挑战什么？",
+"想改掉什么坏习惯？",
+"想养几只宠物？",
+"理想纪念日？",
+"想一起学什么？",
+"最喜欢早晨还是深夜？",
+"最喜欢哪种天气？",
+"最想搬去哪个城市？",
+"最想尝试什么运动？",
+"最想拥有的技能？",
+"最放松的时刻？",
+"最想培养的爱好？",
+"最想每天做的事？",
+"最舒适的空间？",
+"最想改变生活节奏？"
+],
+
+"暧昧升温":[
+"我什么时候最迷人？",
+"喜欢我主动吗？",
+"喜欢被突然抱吗？",
+"我哪点最撩？",
+"最喜欢我哪种眼神？",
+"最想听我耳边说什么？",
+"最想解锁什么体验？",
+"我什么时候最性感？",
+"喜欢我撒娇吗？",
+"想我怎么哄你？",
+"拥抱多久才够？",
+"喜欢我穿什么风格？",
+"喜欢我靠近哪一刻？",
+"更喜欢暧昧还是直球？",
+"我们最有火花瞬间？",
+"最喜欢我触碰哪里？",
+"最想被我抱多久？",
+"最喜欢的亲密时刻？",
+"喜欢被我盯着看吗？",
+"最想偷偷对我说什么？",
+"喜欢我低声说话吗？",
+"最想我什么时候出现？",
+"喜欢我吃醋吗？",
+"最想我怎么表达爱？",
+"喜欢哪种亲密距离？"
+],
+
+"价值观碰撞":[
+"钱和时间哪个重要？",
+"自由还是安全？",
+"爱情需要仪式感吗？",
+"会为理想放弃稳定吗？",
+"兴趣必须一致吗？",
+"沟通还是包容重要？",
+"事业还是家庭优先？",
+"爱是表达还是行动？",
+"争吵重要吗？",
+"能接受异地多久？",
+"需要隐私吗？",
+"会主动低头吗？",
+"谁更该让步？",
+"AA合理吗？",
+"理性还是感性？",
+"你相信一见钟情吗？",
+"爱需要空间吗？",
+"情侣该共享密码吗？",
+"吵架要当天解决吗？",
+"距离产生美吗？",
+"你会改变自己吗？",
+"爱和责任哪个重要？",
+"婚姻必要吗？",
+"你怕承诺吗？",
+"你会坚持长期关系吗？"
+],
+
+"未来规划":[
+"几年后希望什么状态？",
+"理想居住城市？",
+"想什么时候买房？",
+"几岁稳定？",
+"理想存款目标？",
+"希望养宠物吗？",
+"每年固定旅行吗？",
+"理想朋友圈？",
+"多久约会一次？",
+"纪念日怎么过？",
+"未来节奏快还是慢？",
+"长期在哪发展？",
+"家庭氛围怎样？",
+"共同目标是什么？",
+"如何面对低谷？",
+"希望几年后事业如何？",
+"想住大城市还是小城？",
+"未来是否创业？",
+"希望孩子教育方式？",
+"理想退休生活？",
+"未来想拥有几套房？",
+"未来理想收入？",
+"希望工作生活比例？",
+"想定居国外吗？",
+"未来最大的愿望？"
+]
+
+};
+
+const categories=Object.keys(data);
+const canvas=document.getElementById("wheel");
+const ctx=canvas.getContext("2d");
+const arc=2*Math.PI/categories.length;
+let angle=0;
+
+function draw(){
+for(let i=0;i<categories.length;i++){
+ctx.beginPath();
+ctx.fillStyle=i%2==0?"#111":"#222";
+ctx.moveTo(190,190);
+ctx.arc(190,190,190,i*arc,(i+1)*arc);
+ctx.fill();
+ctx.save();
+ctx.translate(190,190);
+ctx.rotate(i*arc+arc/2);
+ctx.fillStyle="#fff";
+ctx.font="17px sans-serif";
+ctx.fillText(categories[i],80,5);
+ctx.restore();
+}
+}
+draw();
+
+function spin(){
+let spinAngle=Math.random()*360+1800;
+angle+=spinAngle;
+canvas.style.transform=`rotate(${angle}deg)`;
+setTimeout(()=>{
+let index=Math.floor(categories.length-(angle%360)/(360/categories.length))%categories.length;
+let category=categories[index];
+let question=data[category][Math.floor(Math.random()*25)];
+document.getElementById("result").innerHTML=`<div style="opacity:0.6;font-size:18px;margin-bottom:12px">${category}</div>${question}`;
+},4500);
+}
+</script>
+
+</body>
+</html>
